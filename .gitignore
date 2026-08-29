@@ -1,0 +1,28 @@
+# Secrets and credentials — never commit these
+.env
+*.pem
+*.key
+*credentials*
+
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+crash.log
+crash.*.log
+
+# Node
+node_modules/
+npm-debug.log*
+
+# App runtime data
+app/data.sqlite
+app/data.sqlite-*
+
+# OS / editor cruft
+.DS_Store
+*.swp
+.vscode/
+.idea/

@@ -1,0 +1,36 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      # TODO: add real tests once you have them, e.g. `npm test`
+      - name: Sanity check the app boots
+        run: |
+          JWT_SECRET=ci_test_secret PORT=3000 node src/server.js &
+          sleep 2
+          curl -sf http://localhost:3000/health
+
+      - name: Build Docker image
+        run: docker build -t taskboard-app:${{ github.sha }} .
+
+      # TODO once you have a registry + cluster:
+      # - name: Log in to registry
+      # - name: Push image (tag with github.sha)
+      # - name: Deploy to Kubernetes (kubectl set image / helm upgrade / etc.)

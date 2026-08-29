@@ -1,0 +1,48 @@
+<%- include('partials/header') %>
+
+<h1>Your tasks</h1>
+<% if (error) { %><p class="error"><%= error %></p><% } %>
+
+<div class="card">
+  <h2>Add a task</h2>
+  <form method="POST" action="/tasks" class="task-form">
+    <label>Title
+      <input type="text" name="title" required autofocus>
+    </label>
+    <label>Description
+      <textarea name="description" rows="2"></textarea>
+    </label>
+    <button type="submit">Add task</button>
+  </form>
+</div>
+
+<div class="card">
+  <h2>Task list</h2>
+  <% if (tasks.length === 0) { %>
+    <p class="muted">No tasks yet. Add your first one above.</p>
+  <% } else { %>
+    <table class="task-table">
+      <thead>
+        <tr><th>Title</th><th>Description</th><th>Status</th><th>Updated</th><th></th></tr>
+      </thead>
+      <tbody>
+        <% tasks.forEach(function(task) { %>
+          <tr>
+            <td><%= task.title %></td>
+            <td><%= task.description %></td>
+            <td><span class="badge badge-<%= task.status %>"><%= task.status %></span></td>
+            <td class="muted"><%= task.updated_at %></td>
+            <td class="row-actions">
+              <a href="/tasks/<%= task.id %>/edit">Edit</a>
+              <form method="POST" action="/tasks/<%= task.id %>/delete" onsubmit="return confirm('Delete this task?');" style="display:inline">
+                <button type="submit" class="btn-danger-ghost">Delete</button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+
+<%- include('partials/footer') %>
