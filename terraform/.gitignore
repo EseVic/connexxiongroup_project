@@ -1,0 +1,10 @@
+aws*
+awscliv2.zip
+aws
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+*.tfvars
+*.tfvars.json
