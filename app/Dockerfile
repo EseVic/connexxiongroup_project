@@ -22,8 +22,6 @@ ENV NODE_ENV=production
 ENV PORT=3000
 EXPOSE 3000
 
-RUN mkdir -p /app/data && chown connexxiongroup:connexxiongroup /app/data
-
 USER connexxiongroup
 
 CMD ["node", "src/server.js"]
