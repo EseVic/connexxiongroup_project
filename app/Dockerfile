@@ -22,7 +22,7 @@ ENV NODE_ENV=production
 ENV PORT=3000
 EXPOSE 3000
 
-RUN mkdir -p /usr/src/app/data && chown connexxiongroup:connexxiongroup /usr/src/app/data
+RUN mkdir -p /app/data && chown connexxiongroup:connexxiongroup /app/data
 
 USER connexxiongroup
 
