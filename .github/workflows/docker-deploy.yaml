@@ -33,16 +33,17 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             set -e
-            cd ~/connexxiongroup_project
 
             # Stop the systemd-managed process so Docker can bind port 3000
-            # instead. Safe to run even if it's already stopped/disabled.
+            # instead.
             sudo systemctl stop connexxiongroup.service || true
             sudo systemctl disable connexxiongroup.service || true
 
-            git pull origin main
-
-            docker compose down
-            docker compose up -d --build
-
-            docker compose ps
+            sudo -u veecode bash -c '
+              set -e
+              cd /home/veecode/connexxiongroup_project
+              git pull origin main
+              docker compose down
+              docker compose up -d --build
+              docker compose ps
+            '
