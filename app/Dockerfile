@@ -1,5 +1,5 @@
 # ---- Build stage ----
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS builder
 
 WORKDIR /app
 
@@ -12,7 +12,7 @@ RUN npm install --omit=dev
 COPY . .
 
 # ---- Runtime stage ----
-FROM node:20-alpine
+FROM node:24-alpine
 
 WORKDIR /app
 
