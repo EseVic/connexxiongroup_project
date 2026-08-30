@@ -8,6 +8,7 @@ RUN apk add --no-cache python3 make g++
 # Install dependencies first so this layer caches across code changes.
 COPY package.json package-lock.json* ./
 RUN npm install --omit=dev
+RUN useradd -m connexxiongroup
 
 COPY . .
 
