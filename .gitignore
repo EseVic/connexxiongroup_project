@@ -26,3 +26,4 @@ app/data.sqlite-*
 *.swp
 .vscode/
 .idea/
+./app/kubernetes/secret.yaml
