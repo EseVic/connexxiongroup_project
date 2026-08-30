@@ -1,0 +1,11 @@
+# Copy this to terraform.tfvars and fill in your own values.
+# terraform.tfvars is gitignored — never commit your real IP or key name here
+# if you consider them sensitive, though for this lab they're not secrets.
+
+aws_region     = "us-east-1"
+instance_type  = "t3.micro"
+ssh_ingress_ip = "YOUR_PUBLIC_IP/32"   # e.g. "102.91.92.224/32" — check with `curl -4 ifconfig.me`
+key_name       = "connexxionGroup_key_pair"
+repo_url       = "https://github.com/EseVic/connexxiongroup_project.git"
+app_subdir     = "app"
+app_port       = 3000

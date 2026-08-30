@@ -1,0 +1,15 @@
+# Terraform (covers both terraform/eks and terraform/ec2-app)
+terraform/**/.terraform/
+terraform/**/*.tfstate
+terraform/**/*.tfstate.*
+terraform/**/*.tfvars
+!terraform/**/*.tfvars.example
+terraform/**/crash.log
+terraform/**/crash.*.log
+
+# Real Kubernetes secret values — only the .example file should be committed
+kubernetes/secret.yaml
+
+# OS / editor cruft
+.DS_Store
+*.swp
