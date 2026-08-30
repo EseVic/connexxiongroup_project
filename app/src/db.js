@@ -1,9 +1,15 @@
 const Database = require('better-sqlite3');
 const path = require('path');
+const fs = require('fs');
 
-// SQLite file lives next to the app. Fine for this lab / assessment scope —
-// for production you'd swap this for a managed database (see README).
-const dbPath = path.join(__dirname, '..', 'data.sqlite');
+// SQLite file lives in its own data/ directory so that, when running with a
+// read-only root filesystem (see docker-compose.yml), only this one
+// directory needs to be mounted as a writable volume — everything else in
+// the container stays read-only.
+const dataDir = path.join(__dirname, '..', 'data');
+fs.mkdirSync(dataDir, { recursive: true });
+
+const dbPath = path.join(dataDir, 'app.db');
 const db = new Database(dbPath);
 
 db.pragma('journal_mode = WAL');

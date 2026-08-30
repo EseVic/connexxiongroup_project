@@ -1,7 +1,9 @@
-# Small, official base image; alpine keeps the image lean for this lab.
-FROM node:20-alpine
+# ---- Build stage ----
+FROM node:20-alpine AS builder
 
-WORKDIR /usr/src/app
+WORKDIR /app
+
+RUN apk add --no-cache python3 make g++
 
 # Install dependencies first so this layer caches across code changes.
 COPY package.json package-lock.json* ./
@@ -9,12 +11,19 @@ RUN npm install --omit=dev
 
 COPY . .
 
+# ---- Runtime stage ----
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY --from=builder /app ./
+
 ENV NODE_ENV=production
 ENV PORT=3000
 EXPOSE 3000
 
-# Runs as the non-root "node" user baked into the official image —
-# avoids running the app as root inside the container.
-USER node
+RUN mkdir -p /usr/src/app/data && chown connexxiongroup:connexxiongroup /usr/src/app/data
+
+USER connexxiongroup
 
 CMD ["node", "src/server.js"]

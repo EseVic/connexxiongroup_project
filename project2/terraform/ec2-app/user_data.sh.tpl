@@ -12,11 +12,9 @@ curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
 apt-get install -y nodejs
 
 # --- 2. Determine the non-root user to run the app as ---
-# Ubuntu cloud images default to the "ubuntu" user.
 sudo useradd -m connexxiongroup
 sudo su - connexxiongroup 
 git clone https://github.com/EseVic/connexxiongroup_project.git
-
 APP_USER="connexxiongroup"
 APP_HOME="/home/$APP_USER"
 REPO_DIR="$APP_HOME/connexxiongroup_project"
@@ -34,8 +32,6 @@ cd "$APP_DIR"
 sudo -u "$APP_USER" npm install --omit=dev
 
 # --- 5. Generate a random JWT secret and write .env ---
-# Generated on the instance itself at boot time — never hard-coded in
-# Terraform code or committed to the repo.
 JWT_SECRET="$(openssl rand -hex 32)"
 
 cat > "$APP_DIR/.env" << EOF
