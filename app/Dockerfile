@@ -30,4 +30,5 @@ RUN mkdir -p /app/data && chown connexxiongroup:connexxiongroup /app/data
 
 USER connexxiongroup
 
-CMD ["node", "src/server.js"]
+ENTRYPOINT ["node"]
+CMD ["src/server.js"]
