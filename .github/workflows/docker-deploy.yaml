@@ -32,19 +32,17 @@ jobs:
           username: veecode
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            set -e
-
+          
+            chmod +x /home/veecode/connexxiongroup_project/scrip.sh
+            ./home/veecode/connexxiongroup_project/scrip.sh
             sudo systemctl stop connexxiongroup.service || true
             sudo systemctl disable connexxiongroup.service || true
 
-            sudo -i -u veecode bash -c '
-              set -e
-              cd /home/veecode/connexxiongroup_project
-              git fetch origin main
-              git reset --hard origin/main
-              docker-compose down
-              docker-compose up -d --build
-              docker-compose ps
-            '
-
-            #just to trigger a redeploy
+ #           sudo -i -u veecode bash -c '
+  #            set -e
+   #           cd /home/veecode/connexxiongroup_project
+    #          git fetch origin main
+     #         git reset --hard origin/main
+      #        docker compose down
+       #       docker compose up -d --build
+        #      docker compose ps
