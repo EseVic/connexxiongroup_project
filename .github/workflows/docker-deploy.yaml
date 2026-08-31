@@ -42,7 +42,7 @@ jobs:
               cd /home/veecode/connexxiongroup_project
               git fetch origin main
               git reset --hard origin/main
-              docker compose down
-              docker compose up -d --build
-              docker compose ps
+              docker-compose down
+              docker-compose up -d --build
+              docker-compose ps
             '
