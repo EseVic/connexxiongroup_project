@@ -49,11 +49,11 @@ data "aws_ami" "ubuntu" {
 
 resource "aws_security_group" "app" {
   name        = "connexxion-app-sg"
-  description = "Connexxion lab app: HTTP from anywhere, SSH from the candidate's IP only"
+  description = "Connexxion lab app: HTTP from anywhere, SSH from your IP only"
   vpc_id      = data.aws_vpc.default.id
 
   ingress {
-    description = "SSH from candidate's own IP only"
+    description = "SSH from your own IP only"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
