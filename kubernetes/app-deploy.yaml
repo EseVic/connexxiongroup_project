@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: connexxion-app
-          image: veecode34/connexxion-app:latest
+          image: veecode34/connexxion-app:v1
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
