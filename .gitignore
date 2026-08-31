@@ -28,3 +28,4 @@ app/data.sqlite-*
 .idea/
 app/data/
 kubernetes/secret.yaml
+./app/kubernetes/secret.yaml

@@ -1,0 +1,49 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies and test
+        working-directory: app
+        run: |
+          npm ci
+          npm test --if-present
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            set -e
+
+            # Stop the systemd-managed process so Docker can bind port 3000
+            # instead.
+            sudo systemctl stop connexxiongroup.service || true
+            sudo systemctl disable connexxiongroup.service || true
+
+            sudo -u veecode bash -c '
+              set -e
+              cd /home/veecode/connexxiongroup_project
+              git pull origin main
+              docker compose down
+              docker compose up -d --build
+              docker compose ps
+            '

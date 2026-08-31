@@ -21,7 +21,7 @@ services:
       - /tmp:size=32m,mode=1777
 
     volumes:
-      - app-data:/usr/src/app/data
+      - app-data:/app/data
 
     # --- Privilege hardening ---
     user: "connexxiongroup"
