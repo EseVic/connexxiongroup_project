@@ -26,12 +26,12 @@ services:
     # --- Privilege hardening ---
     user: "connexxiongroup"
 
-    security_opt:
-      - no-new-privileges:true
+    # security_opt:
+    #   - no-new-privileges:true
 
     #the container runs with zero capabilities.
-    cap_drop:
-      - ALL
+    # cap_drop:
+    #   - ALL
 
     # --- Resource limits ---
     deploy:
