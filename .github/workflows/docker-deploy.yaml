@@ -2,28 +2,62 @@ name: Deploy to EC2
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
   test:
+    name: Test application
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: app/package-lock.json
 
-      - name: Install dependencies and test
+      - name: Install dependencies
         working-directory: app
+        run: npm ci
+
+      - name: Start application and test health endpoint
+        working-directory: app
+        env:
+          JWT_SECRET: ci-test-secret
+          PORT: "3000"
+          NODE_ENV: test
         run: |
-          npm ci
-          npm test --if-present
+          set -e
+          node src/server.js > /tmp/connexxion-app.log 2>&1 &
+          APP_PID=$!
+
+          cleanup() {
+            kill "$APP_PID" 2>/dev/null || true
+          }
+          trap cleanup EXIT
+
+          for attempt in 1 2 3 4 5 6 7 8 9 10; do
+            if curl --fail --silent http://localhost:3000/health; then
+              exit 0
+            fi
+            sleep 2
+          done
+
+          echo "Application did not become healthy"
+          cat /tmp/connexxion-app.log
+          exit 1
 
   deploy:
+    name: Deploy application to EC2
     needs: test
     runs-on: ubuntu-latest
+
     steps:
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.0.3
@@ -31,18 +65,57 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: veecode
           key: ${{ secrets.EC2_SSH_KEY }}
+          command_timeout: 20m
           script: |
-          
-            chmod +x /home/veecode/connexxiongroup_project/scrip.sh
-            ./home/veecode/connexxiongroup_project/scrip.sh
+            set -e
+
+            PROJECT_DIR="/home/veecode/connexxiongroup_project"
+
+            echo "Opening project directory"
+            cd "$PROJECT_DIR"
+
+            echo "Downloading latest code"
+            git fetch origin main
+            git reset --hard origin/main
+
+            echo "Checking required files"
+            test -f docker-compose.yml
+            test -f app/Dockerfile
+
+            if [ ! -f app/.env ]; then
+              echo "ERROR: $PROJECT_DIR/app/.env does not exist"
+              echo "Create the file on EC2 before deploying."
+              exit 1
+            fi
+
+            echo "Checking Docker"
+            docker --version
+            docker compose version
+
+            echo "Stopping the old systemd application"
             sudo systemctl stop connexxiongroup.service || true
             sudo systemctl disable connexxiongroup.service || true
 
- #           sudo -i -u veecode bash -c '
-  #            set -e
-   #           cd /home/veecode/connexxiongroup_project
-    #          git fetch origin main
-     #         git reset --hard origin/main
-      #        docker compose down
-       #       docker compose up -d --build
-        #      docker compose ps
+            echo "Building Docker image"
+            docker compose build --no-cache
+
+            echo "Starting Docker container"
+            docker compose down --remove-orphans
+            docker compose up -d
+
+            echo "Waiting for application health check"
+            for attempt in 1 2 3 4 5 6 7 8 9 10; do
+              if curl --fail --silent http://localhost:3000/health; then
+                echo "Deployment completed successfully"
+                docker compose ps
+                exit 0
+              fi
+
+              echo "Application is not ready yet: attempt $attempt"
+              sleep 5
+            done
+
+            echo "ERROR: Application did not become healthy"
+            docker compose ps --all
+            docker compose logs --tail=200 app
+            exit 1
